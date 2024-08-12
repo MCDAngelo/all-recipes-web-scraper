@@ -1,3 +1,4 @@
+import csv
 from bs4 import BeautifulSoup
 import requests
 
@@ -62,8 +63,9 @@ class AllRecipes:
         ratings = [_get_star_rating(recipe) for recipe in self.recipes]
         num_ratings = [_get_num_ratings(recipe) for recipe in self.recipes]
         tags = [_get_content_tags(recipe) for recipe in self.recipes]
-        self.recipes_info = {
-            title: {
+        self.recipes_info = [
+            {
+                "title": title,
                 "url": url,
                 "rating": rating,
                 "num_ratings": num_rating,
@@ -72,5 +74,12 @@ class AllRecipes:
             for title, url, rating, num_rating, tag in zip(
                 titles, recipe_urls, ratings, num_ratings, tags
             )
-        }
+        ]
 
+    def save_recipe_info(self):
+        header = ["title", "url", "rating", "num_ratings", "tag"]
+        with open("recipes.csv", "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=header)
+            writer.writeheader()
+            for row in self.recipes_info:
+                writer.writerow(row)
